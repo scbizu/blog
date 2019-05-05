@@ -2,7 +2,7 @@
 title: "Go os.Pipe()"
 date: 2019-05-06T02:05:20+08:00
 lastmod: 2019-05-06T02:05:20+08:00
-draft: true
+draft: false
 keywords: [os.Pipe()]
 description: ""
 tags: [go]
