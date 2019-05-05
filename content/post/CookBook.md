@@ -3,6 +3,7 @@ categories: [伪技术相关]
 tags:
 - 记录
 
+lastmod: 2019-05-06T03:00:20+08:00
 title: Nace's CookBook
 date: 2017-10-07 00:06:00
 ---
