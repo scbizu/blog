@@ -1,7 +1,7 @@
 baseURL = "https://blog.scnace.me/"
 languageCode = "en"
 defaultContentLanguage = "en"                             # en / zh-cn / ... (This field determines which i18n file to use)
-title = "一只菜鸡的成长之路"
+title = "Reject modernity, embrace nomality."
 enableRobotsTXT = true
 enableEmoji = true
 theme = "even"
