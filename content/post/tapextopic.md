@@ -81,7 +81,7 @@ Tape 的另一个优点，是它不强迫你接受某一种固定基础设施。
 
 这样一来，底层仍然是 Tape，但对用户暴露出来的可以是更贴近业务直觉的概念，比如 ChatBot 常见的「Topics」列表。
 
-![Topic](../img/post/tapextopic/topic_design.png)
+![Topic](https://blog.scnace.me/img/post/tapextopic/topic_design.png)
 
 存储层上，我只是在 Tape 原本的 entry 和 anchor 之上补了一层 topic 元数据：`topic_initial_index`、`topic_finalized_index`、topic summary，以及 owner、timestamp 等业务字段。这里的 index 我更倾向用自增 `seq`，因为后续做 range search、统计 entry 数量都会更直接。
 
@@ -98,19 +98,19 @@ Tape 的另一个优点，是它不强迫你接受某一种固定基础设施。
 
 #### 正常主题（Common Topic）
 
-![CommonTopic](../img/post/tapextopic/common_topic.png)
+![CommonTopic](https://blog.scnace.me/img/post/tapextopic/common_topic.png)
 
 这是最标准的一条生命周期：开始、交互、结束，完整而清晰。
 
 #### 需要回忆的主题（Memory-able Topic）
 
-![MemoryTopic](../img/post/tapextopic/memory_topic.png)
+![MemoryTopic](https://blog.scnace.me/img/post/tapextopic/memory_topic.png)
 
 在 `post_topic_initial` 之后插入 recall 流程：先根据当前需求去历史 topic summary 里检索相关主题，再把召回结果写成一个 `recall_anchor` 带回当前上下文。它占用的上下文很小，但需要时仍然能顺着 index 范围继续追溯原始 entries。
 
 #### 没有正常结束的主题（Aborted Topic）
 
-![AbortTopic](../img/post/tapextopic/abort_topic.png)
+![AbortTopic](https://blog.scnace.me/img/post/tapextopic/abort_topic.png)
 
 真实用户不会总按流程出牌。有时上一个 topic 还没结束，新的 topic 已经开始了。为避免上下文错乱，我在 `pre_topic_initial` 阶段加了一个 `topic_finalize_prev`：开启新话题前，先检查上一个 topic 是否已经结束；如果没有，就补一条 `topic_finalized`。
 
