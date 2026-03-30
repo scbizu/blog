@@ -10,7 +10,7 @@ author: "scnace"
 
 ## Hello Tape
 
-我是偶然认识 Tape 的。那几天我对全是 🦞 的信息流已经有点疲劳，本来以为它又是一个新包装出来的概念，结果顺着 [tape](https://tape.system) 读下去，反而被它的抽象吸引住了。
+我是偶然认识 Tape 的。那几天我对全是 🦞 的信息流已经有点疲劳，本来以为它又是一个新包装出来的概念，结果顺着 [tape](https://tape.systems) 读下去，反而被它的抽象吸引住了。
 
 Tape 用“纸带”来描述 agent 的 context window：每个关键时刻都像纸带上的一个孔，平时可以折叠，需要回溯时再展开。历史没有消失，也不会被凭空改写。
 
@@ -144,7 +144,7 @@ Tape 是一套设计语言，不是某个固定产品。它可以被拉向不同
 
 ## Credits
 
-- [Tape System](https://tape.system)
+- [Tape System](https://tape.systems)
 - [Bub Community](https://bub.build)
 - [PsiACE](https://github.com/PsiACE)
 - [Manus Blog](https://manus.im/zh-cn/blog/)
