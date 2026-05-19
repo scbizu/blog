@@ -2,7 +2,6 @@
 title: "tape x bee : 我对智能体任务的编排方式"
 date: 2026-05-19T19:00:00+08:00
 
-draft: true
 tags: ["agent", "ai"]
 categories: ["agi"]
 author: "scnace"
