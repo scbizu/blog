@@ -119,7 +119,7 @@ copyright = "copyleft"
 
   [params.gitalk]
     owner = "scbizu"              # Your GitHub ID
-    repo = "https://github.com/scbizu/blog"               # The repo to store comments
+    repo = "blog"               # The repo to store comments
     clientId = "Ov23liyOcyiRI5NWKfZf"           # Your client ID
     clientSecret = "9193dd877ac7f97a7a24efb478044ab5d9a90d23"       # Your client secret
 
