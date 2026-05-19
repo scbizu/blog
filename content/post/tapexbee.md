@@ -76,7 +76,7 @@ export type BeeProfileTopic = ProfileTopic<"bee">;
 
 - 模版描述文件:
   - 模版需要**人为维护**，我们的目的是帮助业务方更好得向 AGENT 描述需求，当然，这些模版的维护者往往是业务侧的开发者们。这个模板的设计符合 [Codex SKILL spec](https://developers.openai.com/codex/skills)，让 GPT 可以把它作为 SKILL 来理解我们业务侧的需求：
-    - assets/metadata.json[^2]: 用 DAG[^3] 的形式来描述整个工作流，这样不管在 UI 和 agent 框架的代码结构上都会更加清晰，也为后面可以扩展的编排功能留了个口子。
+    - assets/metadata.json: 用 DAG[^2] 的形式来描述整个工作流，这样不管在 UI 和 agent 框架的代码结构上都会更加清晰，也为后面可以扩展的编排功能留了个口子。
     - assets/config.toml:  搭配着 SKILL.md 使用，SKILL.md 中的一些需要隐私的配置可以写在配置文件里面，在文档里面维护对它的引用就可以，因为 SKILL.md 的文档会直接暴露在平台上。
     - SKILL.md: 这是一份偏业务需求的说明文档，由人为编写或者由 agent 根据内置的 writing-bee-skills 来自动根据需求文档转译，模版中的 SKILL.md 更多的是一个通用的占位符，业务可以后续根据自己实际情况通过 UI 来调整，也就是说，这是绑定在每个 bee 身上的行为规范。
     - assets/*.features: 我们通过 BDD 来约束 AGENT 是否可以认为某个 DAG Node 完成；在我的实践中发现 agent 会通过一些 trick 来欺骗我任务已经完成，实际是因为想偷懒而不想等待某些异步操作返回。所以，我就开始加 BDD 来约束他的行为。我只能说，这比在 SKILL.md 的某些 soft prompt 效果好的多。
@@ -100,7 +100,7 @@ export type BeeProfileTopic = ProfileTopic<"bee">;
 
 我们可以看到，针对一个具体的业务需求，我们把它拆成了几个有明确上下游依赖的需求，有点像我们平常开发过程，但是对于 agent 来说，它比我能力强的多，实现速度也快的多，为了让作为人类的我跟上它的节奏，方便二次验收它的工作成果，我只能让它尽可能「慢」一点，给我多一点 Review 的时间 ，也让我更有点参与感，别做完了一个需求，连自己到底干了什么都不知道 。所以，我还是把整个需求拆成了多个工作节点（里程碑），这些节点可以根据 SKILL.md 的改动被反复 trigger 以调试和对齐我们和 agent 的认知一致性。
 
-关于这里的 SKILL.md ，我们维护了一个公用的 bee 模板 git 仓库[^2]，把它作为一个文件服务器向 agent 暴露服务，作为 Source of Truth ，bee 模板初始加载的服务就来自于这个 git 仓库，但是，做过开发和产品的同学可能知道，业务的需求会一直摇摆不定，所以，我们也用 workspace (我为了偷懒，在写 chat 的时候就已经实现了，没想到这里被用起来了)的方式来支持对每个 bee 来进行特定的行为更改，workspace 是一个暂时的工作空间，生命周期绑定在 topic 上，topic 一旦被 finalized ，我们就会把 rw 权限都移除 (bee 本身就是 topic ， 所以这里就可以被直接复用)，在当前用户 workspace 达到配置上限时，移除当前用户创建时间最早的 workspace 。
+关于这里的 SKILL.md ，我们维护了一个公用的 bee 模板 git 仓库[^3]，把它作为一个文件服务器向 agent 暴露服务，作为 Source of Truth ，bee 模板初始加载的服务就来自于这个 git 仓库，但是，做过开发和产品的同学可能知道，业务的需求会一直摇摆不定，所以，我们也用 workspace (我为了偷懒，在写 chat 的时候就已经实现了，没想到这里被用起来了)的方式来支持对每个 bee 来进行特定的行为更改，workspace 是一个暂时的工作空间，生命周期绑定在 topic 上，topic 一旦被 finalized ，我们就会把 rw 权限都移除 (bee 本身就是 topic ， 所以这里就可以被直接复用)，在当前用户 workspace 达到配置上限时，移除当前用户创建时间最早的 workspace 。
 
 这里的很多 DAG  Node 其实都调用了很深的 skill chain ,  这里我们可以参考很多微服务时期 RPC 对于最终一致性 (Eventual consistency) 最佳实践的做法。比如怎么对一个 SKILL 的调用做幂等，怎么回滚状态等等。
 
@@ -153,6 +153,6 @@ bee 其实不是我第一个我对于 topic 的扩展实现，第一个扩展是
 **JUST HAVE FUN , AND BREAK SOMETHING.**
 
 [^1]: 我还是挺感谢公司给的 机会 和 token 去让我探索从零开始手搓 agent 的，踩了很多坑，有很多感悟，也有了很多实质性的收获 ♥️
-[^2]: 用 Git 作为模板仓库是有更多考虑在的： 因为可能会涉及到实际的线上业务调整，虽然我们可能没有 blame 文化，但是我们还是要进行版本管理，以追溯每个版本产生的变化，以及支持审计方面的需求。Git 天然就满足了我们的需求，减少了其它工具的维护负担。
-[^3]: DAG (Directed Acyclic Graph):  借用有向无环图的概念来描述一个实际的业务需求。这种数据结构在用来描述「调度」时会被经常提及。
+[^2]: DAG (Directed Acyclic Graph):  借用有向无环图的概念来描述一个实际的业务需求。这种数据结构在用来描述「调度」时会被经常提及。
+[^3]: 用 Git 作为模板仓库是有更多考虑在的： 因为可能会涉及到实际的线上业务调整，虽然我们可能没有 blame 文化，但是我们还是要进行版本管理，以追溯每个版本产生的变化，以及支持审计方面的需求。Git 天然就满足了我们的需求，减少了其它工具的维护负担。
 [^4]: 这里使用 `task.json` 这种 workspace 里的临时存储(甚至还是一份 JSON 文件)，一方面是我觉得我已经有 tape storage 来帮我存储 dag anchor 的 state 了没必要再引入更复杂的实现；另一方面是 JSON 的记录形式对 debug 来说还挺方便的 (~~其实就是我懒~~)
