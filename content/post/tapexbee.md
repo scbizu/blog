@@ -76,14 +76,14 @@ export type BeeProfileTopic = ProfileTopic<"bee">;
 
 - 模版描述文件:
   - 模版需要**人为维护**，我们的目的是帮助业务方更好得向 AGENT 描述需求，当然，这些模版的维护者往往是业务侧的开发者们。这个模板的设计符合 [Codex SKILL spec](https://developers.openai.com/codex/skills)，让 GPT 可以把它作为 SKILL 来理解我们业务侧的需求：
-    - assets/metadata.json[2]: 用 DAG[4] 的形式来描述整个工作流，这样不管在 UI 和 agent 框架的代码结构上都会更加清晰，也为后面可以扩展的编排功能留了个口子。
+    - assets/metadata.json[^2]: 用 DAG[^3] 的形式来描述整个工作流，这样不管在 UI 和 agent 框架的代码结构上都会更加清晰，也为后面可以扩展的编排功能留了个口子。
     - assets/config.toml:  搭配着 SKILL.md 使用，SKILL.md 中的一些需要隐私的配置可以写在配置文件里面，在文档里面维护对它的引用就可以，因为 SKILL.md 的文档会直接暴露在平台上。
     - SKILL.md: 这是一份偏业务需求的说明文档，由人为编写或者由 agent 根据内置的 writing-bee-skills 来自动根据需求文档转译，模版中的 SKILL.md 更多的是一个通用的占位符，业务可以后续根据自己实际情况通过 UI 来调整，也就是说，这是绑定在每个 bee 身上的行为规范。
     - assets/*.features: 我们通过 BDD 来约束 AGENT 是否可以认为某个 DAG Node 完成；在我的实践中发现 agent 会通过一些 trick 来欺骗我任务已经完成，实际是因为想偷懒而不想等待某些异步操作返回。所以，我就开始加 BDD 来约束他的行为。我只能说，这比在 SKILL.md 的某些 soft prompt 效果好的多。
     - ~~其实，前几版的实现中，我还会在 scripts/example.ts 给它几个 example 来实现某些业务功能，但是，我发现反而适得其反了，agent 因为太参考我的实现，而把这个 SKILL 当作是一个正常的SKILL 来执行，但是，实际上，我们需要 agent 把 bee skill 当作 meta-skill 来看待，它需要自己通过代码实现和调试完整某个业务目标。于是，我把这些 example code 移到了一个 using-bee-template 的 skill 中，并且让 agent 在实现具体功能的时候可以参考它的实现。👈 这么做更符合 skill spec 的规范~~
 - AGENT 运行时:
   - 这里的运行时指的并不是实际上执行代码的运行时，而是 agent 在执行 DAG flow 的运行时。
-  - Bee 在提交之后会固化成一份 `task.json` 存在于当前用户的 workspace 中，这份文件由 metadata.json / config.toml 结合而成，用来描述整个 DAG flow 的运行时状态，DAG 在运行时会持续更新这份 `task.json` ，把它从 workspace 中映射到前端的展示层[3]。
+  - Bee 在提交之后会固化成一份 `task.json` 存在于当前用户的 workspace 中，这份文件由 metadata.json / config.toml 结合而成，用来描述整个 DAG flow 的运行时状态，DAG 在运行时会持续更新这份 `task.json` ，把它从 workspace 中映射到前端的展示层[^4]。
   - 至于运行时的 tape 存储，我继续复用 topic 的 tape 结构，每个 DAG Node 抽象为一个 Turn  (🚧 这里会有坑，先埋个伏笔，读者朋友们可以先想一想),  agent 通过 SKILL.md 和 BDD 的约束 (*.features)执行  DAG Node ，如果用户发现这个 Node 的产出不符合预期，用户可以通过调整 SKILL.md 来继续调试此 DAG Node 的行为。
   - 在 DAG flow 全部完成之后，整个结构在 tape 的视角下，就又固化成了:  topic_initial -> entries -> topic_finalized 。bee 的全部执行过程依旧可以通过 entry index 追溯，chat / bee 可以共用这些 topic memory 。在 chat 模式下，agent 可以很「智能」的知道你之前通过某个任务完成了某件事，得到了什么结果；在 bee 的模式下，agent 也可以自然的使用之前归纳总结过的某些 topic Q&A。
 - 执行器:
@@ -154,5 +154,5 @@ bee 其实不是我第一个我对于 topic 的扩展实现，第一个扩展是
 
 [^1]: 我还是挺感谢公司给的 机会 和 token 去让我探索从零开始手搓 agent 的，踩了很多坑，有很多感悟，也有了很多实质性的收获 ♥️
 [^2]: 用 Git 作为模板仓库是有更多考虑在的： 因为可能会涉及到实际的线上业务调整，虽然我们可能没有 blame 文化，但是我们还是要进行版本管理，以追溯每个版本产生的变化，以及支持审计方面的需求。Git 天然就满足了我们的需求，减少了其它工具的维护负担。
-[^3]: 这里使用 `task.json` 这种 workspace 里的临时存储(甚至还是一份 JSON 文件)，一方面是我觉得我已经有 tape storage 来帮我存储 dag anchor 的 state 了没必要再引入更复杂的实现；另一方面是 JSON 的记录形式对 debug 来说还挺方便的 (~~其实就是我懒~~)
-[^4]: DAG (Directed Acyclic Graph):  借用有向无环图的概念来描述一个实际的业务需求。这种数据结构在用来描述「调度」时会被经常提及。
+[^3]: DAG (Directed Acyclic Graph):  借用有向无环图的概念来描述一个实际的业务需求。这种数据结构在用来描述「调度」时会被经常提及。
+[^4]: 这里使用 `task.json` 这种 workspace 里的临时存储(甚至还是一份 JSON 文件)，一方面是我觉得我已经有 tape storage 来帮我存储 dag anchor 的 state 了没必要再引入更复杂的实现；另一方面是 JSON 的记录形式对 debug 来说还挺方便的 (~~其实就是我懒~~)
