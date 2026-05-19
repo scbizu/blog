@@ -1,7 +1,7 @@
 baseURL = "https://blog.scnace.me/"
 languageCode = "en"
 defaultContentLanguage = "en"                             # en / zh-cn / ... (This field determines which i18n file to use)
-title = "Reject modernity, embrace nomality."
+title = "Be humble. Reject modernity, embrace nomality."
 enableRobotsTXT = true
 enableEmoji = true
 theme = "even"
@@ -112,10 +112,10 @@ copyright = "copyleft"
     warn = 180              # Display warning if the last modified time is more than these days ago.    # 如果文章最后更新于这天数之前，显示警告
 
   [params.gitment]
-    owner = ""              # Your GitHub ID
-    repo = ""               # The repo to store comments
-    clientId = ""           # Your client ID
-    clientSecret = ""       # Your client secret
+    owner = "scbizu"             # Your GitHub ID
+    repo = "https://github.com/scbizu/blog"               # The repo to store comments
+    clientId = "Ov23liyOcyiRI5NWKfZf"           # Your client ID
+    clientSecret = "9193dd877ac7f97a7a24efb478044ab5d9a90d23"       # Your client secret
 
   [params.gitalk]
     owner = ""              # Your GitHub ID
